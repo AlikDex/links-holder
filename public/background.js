@@ -57,14 +57,14 @@ const updateContextMenu = function (url) {
   })
 }
 
-const saveUrl = async function (request) {
-  return await getHistory()
+const saveUrl = function (request) {
+  return getHistory()
     .then(async (linksHistory) => {
       if (!Array.isArray(linksHistory)) {
         linksHistory = []
       }
 
-      if (linksHistory.filter(x => x.url === request.url).length === 0) {
+      if (linksHistory.find(x => x.url === request.url) === undefined) {
         linksHistory.push({
           url: request.url,
           title: request.title,
@@ -72,7 +72,11 @@ const saveUrl = async function (request) {
           timestamp: Date.now()
         })
         chrome.storage.local.set({ 'history': linksHistory })
+
+        return true
       }
+
+      return false
     })
 }
 
@@ -143,7 +147,7 @@ function clickMenuHandler (info, tab) {
   }
 }
 
-chrome.runtime.onInstalled.addListener(async () => {
+chrome.runtime.onInstalled.addListener(() => {
 })
 
 chrome.contextMenus.onClicked.addListener(clickMenuHandler)
@@ -160,8 +164,8 @@ chrome.runtime.onMessage.addListener(
   (request, sender, sendResponse) => {
     if (request.type === 'saveUrl') {
       saveUrl(request)
-        .then(() => {
-          sendResponse({})
+        .then((copied) => {
+          sendResponse({ copied: copied })
         })
 
       return true
