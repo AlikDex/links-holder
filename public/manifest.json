@@ -1,0 +1,42 @@
+{
+    "manifest_version": 3,
+    "name": "Links holder",
+    "version": "1.1",
+    "description": "Инструмент для сохранения ссылок. Shift + Ctrl + L => сохранить закладку, Shift + клик по ссылке => сохранить произвольную ссылку",
+    "action": { 
+        "default_icon": "icon.png",
+        "default_title": "Нажми Ctrl(Win)/Command(Mac) + Shift + L для сохранения адреса текущей страницы",
+        "default_popup": "./index.html"
+    },
+    "icons": {
+      "32": "icon.png",
+      "128": "icon128.png"
+    },
+    "content_scripts": [
+      {
+        "matches": [ "*://*/*" ],
+        "js": [ "jquery-3.6.1.min.js", "content.js" ]
+      }
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "permissions": [
+      "storage",
+      "tabs",
+      "activeTab",
+      "contextMenus"
+    ],
+    "commands": {
+        "save-links": {
+          "suggested_key": {
+            "default": "Ctrl+Shift+L",
+            "mac": "Command+Shift+L"
+          },
+          "description": "Сохранить ссылку"
+        }
+    },
+    "content_security_policy": {
+        "extension_page": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'" 
+    }
+  }
